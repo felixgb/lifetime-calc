@@ -116,7 +116,7 @@ borrow = do
     lt <- S.get
     q <- qualifier
     e <- term
-    return $ Borrow (LifetimeLit lt) q e
+    return $ Borrow LTDummy q e
 
 alloc :: CalcParser Term
 alloc = do
@@ -143,9 +143,10 @@ tyUnit = (reserved "Unit" >> return TyUnit)
 
 tyBorrow = do
     reservedOp "&"
+    ltv <- ltvar
     q <- qualifier
     ty <- typeExpr
-    return $ TyBorrow LTDummy q ty
+    return $ TyBorrow (LifetimeVar ltv) q ty
 
 tyArrow = do
     a <- typeExpr
