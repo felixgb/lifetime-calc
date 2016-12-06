@@ -64,7 +64,8 @@ calcParser :: CalcParser Term
 calcParser = sc *> term <* eof
 
 term :: CalcParser Term
-term = parens term <|> termSeq
+term = term' <|> parens term' <|> termSeq
+-- term = parens term <|> termSeq
 
 termSeq :: CalcParser Term
 termSeq = f <$> sepBy1 term' semi
@@ -72,7 +73,7 @@ termSeq = f <$> sepBy1 term' semi
         f l = if length l == 1 then head l else Seq l
 
 term' :: CalcParser Term
-term' = parens app
+term' = try $ parens app
     <|> lam
     <|> intLit
     <|> borrow

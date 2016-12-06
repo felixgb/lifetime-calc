@@ -7,9 +7,12 @@ import Syntax
 
 lifetimeLT :: Lifetime -> Lifetime -> LifetimeCtx -> ThrowsError Bool
 lifetimeLT a b ctx = do
-    (LifetimeLit n1) <- lookupIfVar a ctx
-    (LifetimeLit n2) <- lookupIfVar b ctx
-    return $ n1 <= n2
+    a' <- lookupIfVar a ctx
+    b' <- lookupIfVar b ctx
+    case a' of
+        LifetimeLit n1 -> case b' of
+            LifetimeLit n2 -> return (n1 <= n2)
+            LTDummy -> return True
 
 -- populate dummy borrows
 ltWalk :: Term -> Term
@@ -49,4 +52,5 @@ ltCheck term ctx = case term of
     other -> error (show other)
 
 runLt :: Term -> ThrowsError Lifetime
-runLt term = fmap fst $ ltCheck term emptyCtx
+runLt term = fmap fst $ ltCheck walked emptyCtx
+    where walked = ltWalk term
