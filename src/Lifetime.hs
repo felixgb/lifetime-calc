@@ -1,12 +1,15 @@
 module Lifetime where
 
+import Control.Monad (unless)
+import Control.Monad.Except
+
 import Syntax
 
-lifetimeOrd :: Lifetime -> Lifetime -> LifetimeCtx -> ThrowsError Bool
-lifetimeOrd a b ctx = do
+lifetimeLT :: Lifetime -> Lifetime -> LifetimeCtx -> ThrowsError Bool
+lifetimeLT a b ctx = do
     (LifetimeLit n1) <- lookupIfVar a ctx
     (LifetimeLit n2) <- lookupIfVar b ctx
-    return $ n1 < n2
+    return $ n1 <= n2
 
 -- populate dummy borrows
 ltWalk :: Term -> Term
@@ -15,21 +18,35 @@ ltWalk term = case term of
 
     (Seq ts) -> Seq (map ltWalk ts)
 
-    (Lam lt name ty body fnLt clos) -> Lam lt name ty (ltWalk body) fnLt clos
+    (Lam flt lt name ty body retLt clos) -> Lam flt lt name ty (ltWalk body) retLt clos
 
-    (Borrow _ qual p@(Pointer lt loc)) -> Borrow lt qual p
+    (Borrow _ qual p@(Alloc lt e)) -> Borrow lt qual p
 
     other -> other
 
-ltCheck :: Term -> LifetimeCtx -> ThrowsError (Term, LifetimeCtx)
+ltCheck :: Term -> LifetimeCtx -> ThrowsError (Lifetime, LifetimeCtx)
 ltCheck term ctx = case term of
-    (Var name) = do
-        val <- getFromCtx name ctx
-        ltCheck val ctx
+    (Var name) -> do
+        ltval <- getFromCtx name ctx
+        return (ltval, ctx)
 
-    v@(Lit _) -> return (v, ctx)
+    v@(Lit _) -> return (LTDummy, ctx)
 
     (App t1 t2) -> do
-        (t1', ctx') <- ltCheck t1 ctx
+        (_, ctx') <- ltCheck t1 ctx
         ltCheck t2 ctx'
-        
+
+    (Borrow lt q term) -> return (lt, ctx)
+
+    (Lam funcLt ltParam var ty body retLt clos) -> do
+        ctx' <- extend ltParam funcLt ctx
+        let ctx'' = addToContext var funcLt ctx'
+        (bodyLt, _) <- ltCheck body ctx''
+        ltIsLT <- lifetimeLT retLt bodyLt ctx''
+        unless ltIsLT $ throwError ErrLifetimeViolation
+        return (LTDummy, ctx)
+
+    other -> error (show other)
+
+runLt :: Term -> ThrowsError Lifetime
+runLt term = fmap fst $ ltCheck term emptyCtx

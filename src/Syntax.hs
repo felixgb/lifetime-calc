@@ -1,5 +1,7 @@
 module Syntax where
 
+import Text.Megaparsec.Error
+
 import Control.Monad.Except
 import Control.Monad.Identity
 import qualified Data.Map.Strict as Map
@@ -46,7 +48,7 @@ data Term
     | Pointer Lifetime Location
     | Alloc Lifetime Term
     | Borrow Lifetime Qualifier Term
-    | Lam Lifetime Name Type Term Lifetime TermCtx
+    | Lam Lifetime Lifetime Name Type Term Lifetime TermCtx
     deriving (Show, Eq)
 
 instance HasVar Term where
@@ -60,6 +62,16 @@ data Shadow
     | SBorrow Qualifier Shadow
     deriving (Show, Eq)
 
+-- CONTEXT STUFF
+
+extend :: HasVar a => a -> a -> Map.Map Name a -> ThrowsError (Map.Map Name a)
+extend key val ctx = case getNameIfIsVar key of
+    (Just s) -> return $ Map.insert s val ctx
+    Nothing -> throwError $ ErrNotAVar
+
+addToContext :: Name -> a -> Map.Map Name a -> Map.Map Name a
+addToContext = Map.insert
+
 lookupIfVar :: HasVar a => a -> Map.Map Name a -> ThrowsError a
 lookupIfVar val ctx = case getNameIfIsVar val of
     (Just s) -> getFromCtx s ctx
@@ -69,6 +81,19 @@ getFromCtx :: String -> Map.Map Name a -> ThrowsError a
 getFromCtx name ctx = case Map.lookup name ctx of
     Just v -> return v
     Nothing -> throwError $ ErrVarNotFound name
+
+-- HEAP STUFF
+
+heapsize :: Int
+heapsize = 100
+
+splitHead (x:xs) = (x, xs)
+
+-- DEFINITIONS
+
+emptyCtx = Map.empty
+
+emptyHeap = I.empty
 
 type TypeCtx = Map.Map Name Type
 
@@ -80,13 +105,16 @@ type LocationCtx = Map.Map Name Location
 
 type Heap = I.IntMap (Maybe Term)
 
-type TypeHeap = I.IntMap (Maybe Type)
+type TypeHeap = I.IntMap Type
 
 type ShadowHeap = Map.Map Name Shadow
 
-type ThrowsError a = Except LangError a
+type ThrowsError = Except LangError
 
 data LangError
-    = LangError String
+    = ErrParse String
+    | ErrDefault String
     | ErrVarNotFound String
+    | ErrLifetimeViolation
+    | ErrNotAVar
     deriving (Show)

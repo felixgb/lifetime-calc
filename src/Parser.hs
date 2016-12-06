@@ -97,10 +97,11 @@ decLT = S.modify ((-) 1)
 lam :: CalcParser Term
 lam = do
     void $ symbol "\\"
+    flt <- fmap LifetimeLit S.get
     lv <- angles ltvar
     name <- identifier
     void $ symbol ":"
-    q <- qualifier
+    -- q <- qualifier
     ty <- typeExpr
     void $ symbol "."
     incLT
@@ -108,7 +109,7 @@ lam = do
     decLT
     void $ symbol ":"
     funcTime <- ltvar
-    return $ Lam lv name ty body funcTime Map.empty
+    return $ Lam flt lv name ty body funcTime Map.empty
 
 borrow :: CalcParser Term
 borrow = do
@@ -146,7 +147,7 @@ tyBorrow = do
     ltv <- ltvar
     q <- qualifier
     ty <- typeExpr
-    return $ TyBorrow (LifetimeVar ltv) q ty
+    return $ TyBorrow ltv q ty
 
 tyArrow = do
     a <- typeExpr
@@ -162,4 +163,4 @@ tyPointer = do
 parseTerm :: String -> ThrowsError Term
 parseTerm s = case runParser (S.runStateT term 0) "<input>" s of
     Right (term, _) -> return term
-    Left err -> throwError $ LangError (show err)
+    Left err -> throwError $ ErrParse (parseErrorPretty err)

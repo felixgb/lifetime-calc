@@ -19,6 +19,8 @@ library
                      , Syntax
                      , Parser
                      , Lifetime
+                     , Type
+                     , Run
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , mtl >= 2.2.1
