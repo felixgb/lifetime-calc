@@ -78,7 +78,20 @@ term' = try $ parens app
     <|> intLit
     <|> borrow
     <|> alloc
+    <|> letin
     <|> var
+
+letin :: CalcParser Term
+letin = do
+    reserved "let"
+    v <- identifier
+    reservedOp "="
+    e <- term
+    reserved "in"
+    incLT
+    body <- term
+    decLT
+    return $ Let v e body
 
 app :: CalcParser Term
 app = do
@@ -118,7 +131,7 @@ borrow = do
     lt <- S.get
     q <- qualifier
     e <- term
-    return $ Borrow LTDummy q e
+    return $ Borrow (LifetimeLit lt) q e
 
 alloc :: CalcParser Term
 alloc = do
@@ -158,8 +171,9 @@ tyArrow = do
 
 tyPointer = do
     reservedOp "~"
+    lt <- ltvar
     ty <- typeExpr
-    return $ TyPointer ty
+    return $ TyPointer lt ty
 
 parseTerm :: String -> ThrowsError Term
 parseTerm s = case runParser (S.runStateT term 0) "<input>" s of

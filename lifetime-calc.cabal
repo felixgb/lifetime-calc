@@ -21,6 +21,7 @@ library
                      , Lifetime
                      , Type
                      , Run
+                     , Borrow
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , mtl >= 2.2.1

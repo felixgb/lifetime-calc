@@ -11,7 +11,7 @@ lifetimeLT a b ctx = do
     b' <- lookupIfVar b ctx
     case a' of
         LifetimeLit n1 -> case b' of
-            LifetimeLit n2 -> return (n1 <= n2)
+            LifetimeLit n2 -> return (n1 >= n2)
             LTDummy -> return True
 
 -- populate dummy borrows
@@ -24,6 +24,8 @@ ltWalk term = case term of
     (Lam flt lt name ty body retLt clos) -> Lam flt lt name ty (ltWalk body) retLt clos
 
     (Borrow _ qual p@(Alloc lt e)) -> Borrow lt qual p
+
+    (Let v e body) -> Let v (ltWalk e) (ltWalk body)
 
     other -> other
 
@@ -48,6 +50,11 @@ ltCheck term ctx = case term of
         ltIsLT <- lifetimeLT retLt bodyLt ctx''
         unless ltIsLT $ throwError ErrLifetimeViolation
         return (LTDummy, ctx)
+
+    (Let v e body) -> do
+        (elt, _) <- ltCheck e ctx
+        let ctx' = addToContext v elt ctx
+        ltCheck body ctx'
 
     other -> error (show other)
 

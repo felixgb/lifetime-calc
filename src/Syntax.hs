@@ -2,10 +2,12 @@ module Syntax where
 
 import Text.Megaparsec.Error
 
+import Control.Exception
 import Control.Monad.Except
 import Control.Monad.Identity
 import qualified Data.Map.Strict as Map
 import Data.Maybe
+import Data.Typeable
 import qualified Data.IntMap.Strict as I
 
 type Name = String
@@ -34,7 +36,7 @@ data Type
     = TyArrow Type Type
     | TyInt
     | TyUnit
-    | TyPointer Type
+    | TyPointer Lifetime Type
     | TyBorrow Lifetime Qualifier Type
     deriving (Show, Eq)
 
@@ -42,6 +44,7 @@ type Location = Int
 
 data Term
     = Var Name
+    | Let Name Term Term
     | Lit Integer
     | Seq [Term]
     | App Term Term
@@ -109,6 +112,8 @@ type TypeHeap = I.IntMap Type
 
 type ShadowHeap = Map.Map Name Shadow
 
+-- Error reporting
+
 type ThrowsError = Except LangError
 
 data LangError
@@ -117,4 +122,6 @@ data LangError
     | ErrVarNotFound String
     | ErrLifetimeViolation
     | ErrNotAVar
-    deriving (Show)
+    deriving (Show, Eq, Typeable)
+
+instance Exception LangError
