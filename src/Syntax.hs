@@ -50,6 +50,7 @@ data Term
     | App Term Term
     | Pointer Lifetime Location
     | Alloc Lifetime Term
+    | Deref Term
     | Borrow Lifetime Qualifier Term
     | Lam Lifetime Lifetime Name Type Term Lifetime TermCtx
     deriving (Show, Eq)
@@ -92,6 +93,11 @@ heapsize = 100
 
 splitHead (x:xs) = (x, xs)
 
+fromHeap :: Location -> I.IntMap a -> ThrowsError a
+fromHeap loc heap = case loc `I.lookup` heap of
+    Just v -> return v
+    Nothing -> throwError $ ErrLocNotFound loc
+
 -- DEFINITIONS
 
 emptyCtx = Map.empty
@@ -122,6 +128,8 @@ data LangError
     | ErrVarNotFound String
     | ErrLifetimeViolation
     | ErrNotAVar
+    | ErrMovedValue
+    | ErrLocNotFound Location
     deriving (Show, Eq, Typeable)
 
 instance Exception LangError

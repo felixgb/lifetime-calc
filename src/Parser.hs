@@ -78,6 +78,7 @@ term' = try $ parens app
     <|> intLit
     <|> borrow
     <|> alloc
+    <|> deref
     <|> letin
     <|> var
 
@@ -139,6 +140,12 @@ alloc = do
     lt <- S.get
     e <- term
     return $ Alloc (LifetimeLit lt) e
+
+deref :: CalcParser Term
+deref = do
+    reservedOp "!"
+    e <- term
+    return $ Deref e
 
 intLit :: CalcParser Term
 intLit = integer >>= \n -> return $ Lit n

@@ -56,6 +56,10 @@ ltCheck term ctx = case term of
         let ctx' = addToContext v elt ctx
         ltCheck body ctx'
 
+    (Alloc lt t) -> ltCheck t ctx >> return (lt, ctx)
+
+    (Deref t) -> ltCheck t ctx >> return (LTDummy, ctx)
+
     other -> error (show other)
 
 runLt :: Term -> ThrowsError Lifetime
