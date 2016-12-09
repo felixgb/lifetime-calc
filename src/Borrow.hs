@@ -69,11 +69,10 @@ canMutBorrow = checkRestrictions Claim
 canImmBorrow :: Location -> LoanHeap -> ThrowsError Bool
 canImmBorrow = checkRestrictions Freeze
 
-borrowCheck = undefined
--- 
--- borrowCheck :: Term -> LocationCtx -> Borrowcheck ()
--- borrowCheck term ctx = case term of
---     (Var name)
--- 
+
+borrowCheck :: Term -> LocationCtx -> Borrowcheck ()
+borrowCheck term ctx = case term of
+    (Var name)
+
 runBorrow :: Term -> Borrowcheck ()
 runBorrow term = borrowCheck term emptyCtx
