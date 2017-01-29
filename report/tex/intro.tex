@@ -1,0 +1,80 @@
+\chapter{Introduction}\label{sec:intro}
+
+\section{Project Aims}
+This project aims to design and implement a language with a novel type system,
+with two main aspects. The first is the ability to abstract over type
+constructors as well as types, in effect allowing for a language at the level
+of types as well as expressions. The second is a memory management technique
+that guarantees memory safety at compile time. This technique is incorporated
+into the language as part of the type system.  These two concepts will be
+implemented in the Lambda Calculus. A type checker and interpreter will be
+developed with Higher Kinded Types and a region-based memory management model
+similar to that of the Rust programming language.
+
+The end purpose of this project is to investigate how Higher Kinded Types
+management with the existing type system of the Rust programming language,
+which already has a system of guaranteeing memory safety.
+
+\section{Objective: Combining Type Systems}
+The concepts described in Sections~\ref{sec:hkt} and~\ref{sec:regions} are
+combined in the Lambda Calculus to study how they interact and uncover problems
+that may arise. The syntax of this language is outlined in
+Appendix~\ref{sec:syntax}.
+
+\subsection{Base Objectives}
+The base objectives for the project are outlined below. These are objectives
+that should be reasonably achievable in the time given.
+
+\begin{itemize}
+    \item
+        Design a language which incorporates region based memory management
+        techniques and Higher Kinded Types into the type system. Describe the 
+        language using a formal grammar.
+    \item
+        Implement the Lambda Calculus extended with references as a Haskell
+        program, modelling dynamic memory allocation inside the interpreter for
+        the language.
+    \item
+        Implement a system for ensuring all resources in the language have
+        exactly one owner (are assigned to one variable), based on the model in
+        Rust.
+    \item
+        Implement a type system that incorporates higher order polymorphism
+        into the language (higher kinded types).
+    \item
+        Formalize the rules of the type checker and construct the appropriate
+        typing derivations.
+\end{itemize}
+
+\subsection{Extensions}
+Some extensions to the project are outlined below, which should be completed
+depending on time and complexity constraints.
+
+\begin{itemize}
+    \item
+        Extend the base lambda calculus with constructs that more closely model
+        the Rust programming language, including traits (or in the case of the
+        langauge outlined in the project, type constructor classes), enums 
+        (discriminated union types), and local type inference.
+    \item
+        Investigate how concepts learned in this project can be incorporated
+        into \texttt{rustc}, specifically adding Higher Kinded Types to the
+        language.
+\end{itemize}
+
+\section{Project Overview}
+The rest of this report is divided in several chapters.
+Chapter~\ref{sec:background} describes concepts neccessary in order to
+understand the rest of the report.  Chapter~\ref{sec:professional} gives an
+analysis of the ethical considerations of this project. Chapter~\ref{sec:reqs}
+list the requirements of this project.  This chapter is divided into the
+functional requirements, or what the project will do, and non-functional
+requirements which list how the project will be carried out. Finally the
+acceptance criteria are listed, which the final tests of the project will be
+based on. Chapter~\ref{sec:plan} breaks down the main phases of work to be
+completed in this project and gives an estimated time for each phase. Work done
+so far is also listed. Chapter~\ref{sec:log} details what is discussed during
+meetings. Both meetings which have already happened and meetings which have yet
+to happen are listed. Appendix~\ref{sec:proposal} gives the original project
+proposal which was already submitted. Appendix~\ref{sec:grammar} describes the
+grammar of the extended Lambda Calculus that this project is based on.

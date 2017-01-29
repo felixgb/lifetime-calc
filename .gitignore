@@ -39,3 +39,8 @@ tags
 *.ps
 *.eps
 *.pdf
+
+*.bbl
+*.blg
+*.lol
+*.run.xml

@@ -1,0 +1,109 @@
+\documentclass{report} 
+
+\usepackage[backend=bibtex]{biblatex}
+\usepackage[english]{babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage[scaled=1.3]{helvet}
+\usepackage{pgfgantt}
+\usepackage{blindtext}
+\usepackage{courier}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{fmtcount}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{times}
+\usepackage{pdfpages}
+\usepackage{syntax}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{appendix}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage{float}
+\usepackage{datetime}
+
+\bibliography{fyp.bib}
+\usetikzlibrary{automata, arrows}
+
+\lstset{%
+    basicstyle=\footnotesize\ttfamily,
+    captionpos=b
+}
+
+\title{Lambda Calculus with Fun and Higher Kinded Types \\
+\Large{Interim Report}
+}
+\date{\today}
+\author{Felix~Bowman \\ \normalsize{Candidate Number: number} \\ Supervisor: Dr.~Martin~Berger}
+
+\newcommand{\Req}[4]{%
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l p{10cm}}
+            \textbf{Description} & #1 \\
+            \textbf{Input} & #2 \\
+            \textbf{Output} & #3 \\
+            \textbf{Error} & #4 \\
+        \end{tabular}
+    \end{table}
+}
+
+\newcommand{\Accept}[3]{%
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l p{10cm}}
+            \textbf{Functional Requirement} & #1 \\
+            \textbf{Passing Criteria} & #2 \\
+            \textbf{Tests} & #3 \\
+        \end{tabular}
+    \end{table}
+}
+
+\setlength\marginparwidth{2cm}
+\newcommand{\Note}[1]{%
+    \marginpar{\small{\textit{#1}}}
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\huge Lambda Calculus with Lifetimes and Higher Kinded Types\par}
+    \vspace{0.5cm}
+    {\large Final Year Project Report\par}
+    \vspace{2cm}
+    {\large Felix Bowman\par}
+    {Candidate Number: 122587}
+    \vfill
+    {\large Supervisor: Dr.~Martin~Berger \par}
+    \vspace{0.5cm}
+    {\large University of Sussex \par}
+    {Department of Informatics \par}
+    \vspace{1cm}
+    \vfill
+\end{titlepage}
+
+\tableofcontents%
+\lstlistoflistings%
+
+\include{tex/intro}
+\include{tex/ethics}
+\include{tex/requirements}
+\include{tex/background}
+\include{tex/impl}
+\include{tex/testing}
+\include{tex/evaluation}
+\include{tex/conclusion}
+
+\begin{appendices}
+
+\end{appendices}
+
+\printbibliography%
+
+\end{document}
+
